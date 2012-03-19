@@ -5,9 +5,9 @@ public class Transformer {
 		return str;
 	}
 	
-	static public String replace(String exp, int[] bounds, int result){
+	static public String replace(String exp, int[] bounds, String result){
 		StringBuffer sb = new StringBuffer(exp);
-		sb.replace(bounds[0], bounds[1], String.valueOf(result));
+		sb.replace(bounds[0], bounds[1], result);
 		return sb.toString();
 	}
 }

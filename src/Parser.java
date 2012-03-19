@@ -7,11 +7,12 @@ public class Parser {
 	private int CurrentOperationPosition = 0;
 	private int LastExpressionRightBound = 0;
 	private int LastExpressionLeftBound = 0;
+	public boolean calculated = false;
 	
 	/*Constructor*/
 	Parser(Expression exp){
 		this.expression = exp;
-		this.exp = expression.getCurrentExpression();
+		this.exp = expression.getInputExpression();
 	}
 	
 	final private static char[] OPERANDS = {'*','/','+','-'}; 
@@ -102,6 +103,12 @@ public class Parser {
 	public String[] getNextExpression(){
 		String[] operands = null;
 		char operation = getMostPriorityOperation();
+		if(operation == ' '){
+			calculated = true;
+			operands = new String[1];
+			operands[0] = this.exp;
+			return operands;
+		}
 		operands = getOperandsForCurrentOperation();
 		operands[2] = Character.toString(operation);
 		return operands;
@@ -118,18 +125,20 @@ public class Parser {
 	
 	/*Find the most deep expression in brackets*/
 	private String getExpressionInBrackets(){
+		this.LeftBracketPos = 0;
+		this.RightBracketPos = 0;
 		for (int i = 0; i < this.exp.length(); i++){
 			if( '(' == this.exp.charAt(i)){
-				this.RightBracketPos = i;
+				this.LeftBracketPos = i;
 			}
 			
 			if( ')' == this.exp.charAt(i) ){
-				this.LeftBracketPos = i;
+				this.RightBracketPos = i;
 				break;
 			}
 		}
 		if ( 0 != this.RightBracketPos && 0 != this.LeftBracketPos ){
-			return this.exp.substring(this.RightBracketPos, this.LeftBracketPos);
+			return this.exp.substring(this.LeftBracketPos, this.RightBracketPos+1);
 		}
 		else{
 			return null;
@@ -139,19 +148,24 @@ public class Parser {
 	
 	/*Get next operation in expression, in accordance with priority*/
 	private char getNextOperation(String str){
-		char operation = ' ';
-		for (int i = 0; i < str.length(); i++){
+		char operation;
+		
+		for ( int i = 0; i < str.length(); i++){
 			operation = str.charAt(i);
 			if( operation == '*' || operation == '/'){
-				this.CurrentOperationPosition = i;
-				return operation;
-			}
-			if( operation == '+' || operation == '-'){
-				this.CurrentOperationPosition = i;
+				this.CurrentOperationPosition = i + this.LeftBracketPos;
 				return operation;
 			}
 		}
-		return operation;
+		
+		for ( int i = 0; i < str.length(); i++){
+			operation = str.charAt(i);
+			if( operation == '+' || (operation == '-' && i != 0) ){
+				this.CurrentOperationPosition = i + this.LeftBracketPos;
+				return operation;
+			}
+		}
+		return ' ';
 	}
 	
 	/*Find and return array with operands */
@@ -174,6 +188,11 @@ public class Parser {
 				'9' >= exp.charAt(currentPos) ){
 			currentPos++;
 		}
+		/*Dirty hack*/
+		if( currentPos < exp.length() && 
+			exp.charAt(currentPos)==')'){
+			currentPos++;
+		}
 		this.LastExpressionRightBound = currentPos;
 		operands[1] = exp.substring(this.CurrentOperationPosition + 1, currentPos);
 		
@@ -185,5 +204,14 @@ public class Parser {
 		bounds[0] = this.LastExpressionLeftBound;
 		bounds[1] = this.LastExpressionRightBound;
 		return bounds;
+	}
+	
+	public boolean passNewString(String s){
+		if(s == null){
+			return false;
+		}
+		this.expression.setNewExpression(s);
+		this.exp = this.expression.getInputExpression();
+		return true;
 	}
 }

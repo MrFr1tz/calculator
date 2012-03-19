@@ -7,7 +7,7 @@ public class Expression {
 		this.expression = exp;
 	}
 	
-	public String getCurrentExpression(){
+	public String getInputExpression(){
 		return this.expression;
 	}
 	
