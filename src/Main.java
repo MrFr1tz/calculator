@@ -6,7 +6,6 @@ public class Main {
 			String input = null;
 			String[] str = null;
 			
-			
 			while(sc.hasNext()){
 				input = sc.nextLine();
 				input = Transformer.deleteSpaces(input);
@@ -28,7 +27,7 @@ public class Main {
 					System.exit(0);
 				}
 				int[] bounds = parser.getBoundsForLastExpression();
-				String result = Transformer.replace(exp.getInputExpression(), bounds, Calculator.evaluate(str[0], str[1], str[2]));
+				String result = Transformer.replace(exp.getInputExpression(), bounds, Calculator.evaluate(str[0], str[1], str[2]));	
 				parser.passNewString(result);
 			}
 		}

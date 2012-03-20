@@ -18,7 +18,9 @@ public class Parser {
 	final private static char[] OPERANDS = {'*','/','+','-'}; 
 	
 	/*Wrapper for following methods checkBrackets() && checkExpression()*/
-	public boolean checkCorrectness(){ 
+	public boolean checkCorrectness(){
+		this.exp = resolveOperation(this.exp);
+		this.expression.setNewExpression(this.exp);
 		return checkBrackets() && checkExpression(); 
 	}
 	
@@ -28,6 +30,10 @@ public class Parser {
 		int RightBrackets = 0;
 		int i = 0;
 		int pairs = 0;
+		
+		if(this.exp == null){
+			return false;
+		}
 		
 		for( i = exp.length() - 1; i >= 0 ; i-- ){
 			char c = exp.charAt(i);
@@ -80,9 +86,9 @@ public class Parser {
 					}
 					
 					if( (('0' <= lchar && '9' >= lchar) || 
-						lchar == ')') &&
+						lchar == ')' || lchar == '*') &&
 						(('0' <= rchar && '9' >= rchar) || 
-						rchar == '(') 
+						rchar == '(' || rchar == '-') 
 						){
 						continue;
 					}
@@ -137,7 +143,7 @@ public class Parser {
 				break;
 			}
 		}
-		if ( 0 != this.RightBracketPos && 0 != this.LeftBracketPos ){
+		if ( 0 != this.RightBracketPos || 0 != this.LeftBracketPos ){
 			return this.exp.substring(this.LeftBracketPos, this.RightBracketPos+1);
 		}
 		else{
@@ -176,19 +182,37 @@ public class Parser {
 		
 		while( currentPos != 0 && 
 				'0' <= exp.charAt(currentPos) &&
-				'9' >= exp.charAt(currentPos) ){
+				'9' >= exp.charAt(currentPos) &&
+				'(' != exp.charAt(currentPos - 1)){
 			currentPos--;
 		}
-		this.LastExpressionLeftBound = currentPos;
-		operands[0] = exp.substring(currentPos, this.CurrentOperationPosition);
 		
-		currentPos = pointer + 1;
-		while( currentPos < exp.length() && 
-				'0' <= exp.charAt(currentPos) &&
-				'9' >= exp.charAt(currentPos) ){
-			currentPos++;
+		this.LastExpressionLeftBound = currentPos;
+		if(exp.charAt(this.LastExpressionLeftBound) == '+' ||
+			exp.charAt(this.LastExpressionLeftBound) == '*' || 
+			exp.charAt(this.LastExpressionLeftBound) == '/'){
+			this.LastExpressionLeftBound++;
 		}
+		
 		/*Dirty hack*/
+		if( currentPos != 0 && 
+				exp.charAt(currentPos - 1)=='('){
+			this.LastExpressionLeftBound--;
+		}
+		operands[0] = exp.substring(this.LastExpressionLeftBound, this.CurrentOperationPosition);
+		
+		/*---- Need proper solution for following situations '*-' '\-' ----*/ 
+		currentPos = pointer + 1;
+		while( currentPos < exp.length() ){
+			if( ('0' <= exp.charAt(currentPos) && '9' >= exp.charAt(currentPos))){
+				currentPos++;
+			}
+			else{
+				break;
+			}
+		}
+		
+		/*Second dirty hack*/
 		if( currentPos < exp.length() && 
 			exp.charAt(currentPos)==')'){
 			currentPos++;
@@ -199,6 +223,7 @@ public class Parser {
 		return operands;
 	}
 
+	/*Get bounds for last found expression for further expression modification*/
 	public int[] getBoundsForLastExpression(){
 		int[] bounds = new int[2];
 		bounds[0] = this.LastExpressionLeftBound;
@@ -206,11 +231,32 @@ public class Parser {
 		return bounds;
 	}
 	
+	/*Replace '+-' on '-' and '--' on '+' */
+	private String resolveOperation(String str){
+		for(int i = 0; i < str.length(); i++){
+			char c = str.charAt(i);
+			if( c == '+' && str.charAt(i+1)=='-'){
+				int[] bounds = new int[2];
+				bounds[0] = i;
+				bounds[1] = i+2;
+				str = Transformer.replace(str, bounds, "-");
+			}
+			else if( c == '-' && str.charAt(i+1)=='-'){
+				int[] bounds = new int[2];
+				bounds[0] = i;
+				bounds[1] = i+2;
+				str = Transformer.replace(str, bounds, "+");
+			}
+		}
+		return str;
+	}
+	
+	/*Save modified expression*/
 	public boolean passNewString(String s){
 		if(s == null){
 			return false;
 		}
-		this.expression.setNewExpression(s);
+		this.expression.setNewExpression(resolveOperation(s));
 		this.exp = this.expression.getInputExpression();
 		return true;
 	}
