@@ -16,21 +16,29 @@ public class Calculator {
 			operand2 = sb.toString();
 		}
 		
-		int op1 = Integer.valueOf(operand1);
-		int op2 = Integer.valueOf(operand2);
+		double op1 = Double.valueOf(operand1);
+		double op2 = Double.valueOf(operand2);
+		
 		switch (operator){
 			case '+':
 				return String.valueOf(op1+op2);
 			case '-':
 				return String.valueOf(op1-op2);
 			case '*':
+				if(op1 < 0 && op2 < 0){
+					return "+" + String.valueOf(op1*op2);
+				}
 				return String.valueOf(op1*op2);
 			case '/':
 				if(op2 != 0){
+					if(op1 < 0 && op2 < 0){
+						return "+" + String.valueOf(op1/op2);
+					}
 					return String.valueOf(op1/op2);
 				}
 				else{
 					System.out.println("Division by zero");
+					System.exit(0);
 				}
 			default:
 				break;

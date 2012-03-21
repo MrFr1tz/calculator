@@ -20,6 +20,7 @@ public class Main {
 				System.exit(1);
 			}
 			
+			/*Main cycle of application*/
 			while(true){ 
 				str = parser.getNextExpression();
 				if(true == parser.calculated){
@@ -28,7 +29,9 @@ public class Main {
 				}
 				int[] bounds = parser.getBoundsForLastExpression();
 				String result = Transformer.replace(exp.getInputExpression(), bounds, Calculator.evaluate(str[0], str[1], str[2]));	
-				parser.passNewString(result);
+				if( false == parser.passNewString(result) ){
+					System.out.println("Input string is empty.");
+				}
 			}
 		}
 }
