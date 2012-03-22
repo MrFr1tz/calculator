@@ -101,7 +101,7 @@ public class Parser {
 			for ( int j = 0; j < exp.length(); j++ ){
 				c = exp.charAt(j);
 				
-				if( (c <= '0' || c >= '9') && 
+				if( (c < '0' || c > '9') && 
 					 c != '+' && 
 					 c != '-' && 
 					 c != '*' && 
@@ -137,7 +137,7 @@ public class Parser {
 					}
 					else
 					{
-						System.out.println("Wrong expression.");
+						//System.out.println("Wrong expression.");
 						return retval;
 					}
 				}

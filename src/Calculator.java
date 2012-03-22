@@ -12,12 +12,12 @@ public class Calculator {
 		
 		if( operand2.charAt(operand2.length() - 1) == ')'){
 			StringBuffer sb = new StringBuffer(operand2);
-			sb.deleteCharAt(operand2.length()- 1);
+			sb.deleteCharAt(operand2.length() - 1);
 			operand2 = sb.toString();
 		}
 		
-		double op1 = Double.valueOf(operand1);
-		double op2 = Double.valueOf(operand2);
+		float op1 = Float.valueOf(operand1);
+		float op2 = Float.valueOf(operand2);
 		
 		switch (operator){
 			case '+':
