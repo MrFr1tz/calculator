@@ -16,26 +16,47 @@ public class Transformer {
 	
 	/*Replace '+-' on '-' and '--' on '+' */
 	public static String resolveOperation(String str){
+		
 		for(int i = 0; i < str.length(); i++){
 			char c = str.charAt(i);
 			if( c == '+' && str.charAt(i+1)=='-'){
-				int[] bounds = new int[2];
-				bounds[0] = i;
-				bounds[1] = i+2;
-				str = Transformer.replace(str, bounds, "-");
+				str = str.replace("+-", "-");
 			}
 			else if( c == '-' && str.charAt(i+1)=='-'){
-				int[] bounds = new int[2];
-				bounds[0] = i;
-				bounds[1] = i+2;
-				str = Transformer.replace(str, bounds, "+");
+				str = str.replace("--", "+");
 			}
 		}
+		
 		return str;
 	}
 	
 	/*Prepare the input expression to parse*/
 	static public String prepareExpression(String str){
-		return str;
+		char c;
+		StringBuffer sb = new StringBuffer(str);
+		
+		for ( int i = 0; i < sb.length(); i++ ){
+			c = sb.charAt(i);
+			if( c == ')' && 
+				( i+1 < sb.length() ) && 
+				sb.charAt(i+1) == '('){
+				sb.insert(i+1, "*");
+			}
+			else if( (c >= '0' && c <= '9') &&
+				(i+1 < sb.length()) &&
+				sb.charAt(i+1) == '(' ){
+				sb.insert(i+1, "*");
+			}
+		}
+	
+		//System.out.print(sb.toString());
+		return sb.toString();
+	}
+	
+	/*Prepare calculated result before output*/
+	static public String prepareResultForOutput(String str){
+		str = str.replace("(", "");
+		str = str.replace(")", "");
+		return str.replace(str, "=" + str);
 	}
 }

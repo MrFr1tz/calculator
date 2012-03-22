@@ -8,6 +8,7 @@ public class Parser {
 	private int LastExpressionRightBound = 0;
 	private int LastExpressionLeftBound = 0;
 	public boolean calculated = false;
+	final private static char[] OPERATOR = {'*','/','+','-'}; 
 	
 	/*Constructor*/
 	Parser(Expression exp){
@@ -15,13 +16,36 @@ public class Parser {
 		this.exp = expression.getInputExpression();
 	}
 	
-	final private static char[] OPERANDS = {'*','/','+','-'}; 
-	
 	/*Wrapper for following methods checkBrackets() && checkExpression()*/
 	public boolean checkCorrectness(){
 		this.exp = Transformer.resolveOperation(this.exp);
 		this.expression.setNewExpression(this.exp);
 		return checkBrackets() && checkExpression(); 
+	}
+	
+	/*Clarification for dots*/
+	private boolean checkDots(){
+		char c;
+		int counter;
+		
+		for ( int i = 0 ; i < exp.length(); i++ ){
+			c = exp.charAt(i);
+			if( c == '.' ){
+				counter = i + 1;
+				while( counter < exp.length() && ( c != '+' && 
+						  c != '-' &&
+						  c != '*' &&
+						  c != '/' ) ){
+					c = exp.charAt(counter);
+					if( c == '.'){
+						return false;
+					}
+					counter++;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/*Clarification for brackets*/
@@ -31,30 +55,33 @@ public class Parser {
 		int i = 0;
 		int pairs = 0;
 		
-		if(this.exp == null){
+		if( this.exp == null ){
 			return false;
 		}
 		
 		for( i = exp.length() - 1; i >= 0 ; i-- ){
 			char c = exp.charAt(i);
-			if( ( c == '(' ) &&  (pairs == 0) ){
+			if( ( c == '(' ) &&  ( pairs == 0 ) ){
 				System.out.println("Opened '(' bracket without closed bracket ')'");
 				//System.out.println(LeftBrackets + " " + RightBrackets + " " + pairs);
 				return false;
 			}
-			else if ( c == '(' && (pairs != 0) ){
+			else if ( c == '(' && ( pairs != 0 ) ){
 				LeftBrackets++;
 				pairs--;
 			}
 			
-			if ( c == ')' ){
+			if ( c == ')' && '(' != exp.charAt(i - 1) ){
 				RightBrackets++;
 				pairs++;
 			}
+			else if( c == ')' && '(' == exp.charAt(i - 1) ){
+				return false;
+			}
 		}
 		
-		if(LeftBrackets == RightBrackets &&
-				pairs == 0)
+		if( LeftBrackets == RightBrackets &&
+				pairs == 0 )
 			return true;
 		
 		System.out.println("Closed ')' bracket without opened bracket '('");
@@ -66,10 +93,27 @@ public class Parser {
 	private boolean checkExpression(){
 		char lchar = 0;
 		char rchar = 0;
-		for ( int i = 0; i < OPERANDS.length; i++ ){
+		boolean isDot = false;
+		boolean retval = false;
+		char c;
+		
+		for ( int i = 0; i < OPERATOR.length; i++ ){
 			for ( int j = 0; j < exp.length(); j++ ){
-				if( OPERANDS[i] == exp.charAt(j) ){
-					if( j == 0 && OPERANDS[i] == '-' ){
+				c = exp.charAt(j);
+				
+				if( (c <= '0' || c >= '9') && 
+					 c != '+' && 
+					 c != '-' && 
+					 c != '*' && 
+					 c != '/' &&
+					 c != '.' &&
+					 c != '(' &&
+					 c != ')'){
+					return retval;
+				}
+				
+				if( OPERATOR[i] == exp.charAt(j) ){
+					if( j == 0 && OPERATOR[i] == '-' ){
 						rchar = exp.charAt(j+1);
 						if( ('0' <= rchar && '9' >= rchar) ||
 								rchar == '('){
@@ -81,35 +125,52 @@ public class Parser {
 						rchar = exp.charAt(j+1);	
 					}
 					else{
-						System.out.println("Expression could't start with " + OPERANDS[i] + " operator"); 
-						return false;
+						System.out.println("Expression could't start with " + OPERATOR[i] + " operator"); 
+						return retval;
 					}
 					
-					if( (('0' <= lchar && '9' >= lchar) || 
-						lchar == ')' || lchar == '*' || lchar == '/' || lchar == '(') &&
-						(('0' <= rchar && '9' >= rchar) || 
-						rchar == '(' || rchar == '-') 
-						){
+					if( ( ( '0' <= lchar && '9' >= lchar ) || 
+						lchar == ')' || lchar == '*' || lchar == '/' || lchar == '(' ) &&
+						( ( '0' <= rchar && '9' >= rchar) || 
+						rchar == '(' || rchar == '-' ) ){
 						continue;
 					}
 					else
 					{
-						//System.out.println("Wrong expression.");
-						return false;
+						System.out.println("Wrong expression.");
+						return retval;
+					}
+				}
+				else if( exp.charAt(j) == '.' ){
+					if( j == 0 || j == exp.length() - 1){
+						return retval;
+					}
+					lchar = exp.charAt(j-1);
+					rchar = exp.charAt(j+1);
+					isDot = true;
+					if( lchar < '0' || 
+						lchar > '9' ||
+						rchar < '0' || 
+						rchar > '9' ){
+						return retval;
 					}
 				}
 			}
 		}
 		
-		System.out.println("Good expression");
-		return true;
+		retval = true;
+		
+		if( isDot == true ){
+			retval = this.checkDots();
+		}
+		return retval;
 	}
 	
 	/*Return operands and sign of operation*/
 	public String[] getNextExpression(){
 		String[] operands = null;
 		char operation = getMostPriorityOperation();
-		if(operation == ' '){
+		if( operation == ' ' ){
 			calculated = true;
 			operands = new String[1];
 			operands[0] = this.exp;
