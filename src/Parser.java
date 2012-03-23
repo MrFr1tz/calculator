@@ -32,7 +32,8 @@ public class Parser {
 			c = exp.charAt(i);
 			if( c == '.' ){
 				counter = i + 1;
-				while( counter < exp.length() && ( c != '+' && 
+				while( counter < exp.length() && 
+						( c != '+' && 
 						  c != '-' &&
 						  c != '*' &&
 						  c != '/' ) ){
@@ -227,7 +228,7 @@ public class Parser {
 		
 		for ( int i = 0; i < str.length(); i++){
 			operation = str.charAt(i);
-			if( ( operation == '+' && i != 0 ) || (operation == '-' && i != 0) ){
+			if( ( operation == '+' && i != 0 ) || (operation == '-' && i != 0 && str.charAt(i - 1) != '(' ) ){
 				this.CurrentOperationPosition = i + this.LeftBracketPos;
 				return operation;
 			}

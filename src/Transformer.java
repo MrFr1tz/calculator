@@ -16,7 +16,6 @@ public class Transformer {
 	
 	/*Replace '+-' on '-' and '--' on '+' */
 	public static String resolveOperation(String str){
-		
 		for(int i = 0; i < str.length(); i++){
 			char c = str.charAt(i);
 			if( c == '+' && str.charAt(i+1)=='-'){
@@ -25,15 +24,45 @@ public class Transformer {
 			else if( c == '-' && str.charAt(i+1)=='-'){
 				str = str.replace("--", "+");
 			}
-		}
-		
+		}	
 		return str;
+	}
+	
+	/*Delete unneeded brackets from expression*/
+	private static String removeUnneededBrackets(String str){
+		char c;
+		int lbracketpos;
+		StringBuffer sb =  new StringBuffer(str);
+		
+		for(int i = 0; i < sb.length(); i++){
+			c = sb.charAt(i); 
+			if( c == '(' && sb.charAt(i+1) == '-' ){
+				lbracketpos = i;
+				int counter = i + 1;
+				while( c != ')' ){
+					counter++;
+					c = sb.charAt(counter);
+					if( c == '-' || 
+						c == '+' || 
+						c == '*' || 
+						c == '/' ){
+						break;
+					}
+					
+					if( c == ')'){
+						sb.deleteCharAt(lbracketpos);
+						sb.deleteCharAt(counter - 1);
+					}
+				}
+			}
+		}
+		return sb.toString();
 	}
 	
 	/*Prepare the input expression to parse*/
 	static public String prepareExpression(String str){
 		char c;
-		StringBuffer sb = new StringBuffer(str);
+		StringBuffer sb = new StringBuffer(Transformer.removeUnneededBrackets(str));
 		
 		for ( int i = 0; i < sb.length(); i++ ){
 			c = sb.charAt(i);
@@ -49,7 +78,6 @@ public class Transformer {
 			}
 		}
 	
-		//System.out.print(sb.toString());
 		return sb.toString();
 	}
 	
@@ -57,6 +85,8 @@ public class Transformer {
 	static public String prepareResultForOutput(String str){
 		str = str.replace("(", "");
 		str = str.replace(")", "");
+		str = str.replace("", "");
+		str = str.replace("+", "");
 		return str.replace(str, "=" + str);
 	}
 }
