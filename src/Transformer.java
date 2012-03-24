@@ -36,7 +36,7 @@ public class Transformer {
 		
 		for(int i = 0; i < sb.length(); i++){
 			c = sb.charAt(i); 
-			if( c == '(' && sb.charAt(i+1) == '-' ){
+			if( c == '(' && ( sb.charAt(i+1) == '-' || ( '0' <= sb.charAt(i+1) && '9' >= sb.charAt(i+1) ) ) ){
 				lbracketpos = i;
 				int counter = i + 1;
 				while( c != ')' ){
@@ -62,7 +62,7 @@ public class Transformer {
 	/*Prepare the input expression to parse*/
 	static public String prepareExpression(String str){
 		char c;
-		StringBuffer sb = new StringBuffer(Transformer.removeUnneededBrackets(str));
+		StringBuffer sb = new StringBuffer(str);
 		
 		for ( int i = 0; i < sb.length(); i++ ){
 			c = sb.charAt(i);
@@ -78,7 +78,8 @@ public class Transformer {
 			}
 		}
 	
-		return sb.toString();
+		return Transformer.removeUnneededBrackets(sb.toString());
+		//return sb.toString();
 	}
 	
 	/*Prepare calculated result before output*/
