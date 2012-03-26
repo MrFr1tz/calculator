@@ -1,4 +1,5 @@
 
+
 public class Parser {
 	private Expression expression = null;
 	private String exp = null;
@@ -72,11 +73,15 @@ public class Parser {
 				pairs--;
 			}
 			
-			if ( c == ')' && '(' != exp.charAt(i - 1) ){
+			if ( c == ')' && i > 0  && '(' != exp.charAt(i - 1) ){
 				RightBrackets++;
 				pairs++;
 			}
-			else if( c == ')' && '(' == exp.charAt(i - 1) ){
+			else if( c == ')' && i > 0 && '(' == exp.charAt(i - 1) ){
+				return false;
+			}
+			
+			if(  ( c == ')' ) && exp.length() == 1 ){
 				return false;
 			}
 		}
@@ -122,8 +127,10 @@ public class Parser {
 						}
 					}
 					else if( j > 0 ){
-						lchar = exp.charAt(j-1);
-						rchar = exp.charAt(j+1);	
+						if( j > 0 )
+							lchar = exp.charAt(j-1);
+						if( j + 1 < exp.length() )
+							rchar = exp.charAt(j+1);	
 					}
 					else{
 						System.out.println("Expression could't start with " + OPERATOR[i] + " operator"); 

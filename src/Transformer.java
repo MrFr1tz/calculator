@@ -1,4 +1,3 @@
-
 public class Transformer {
 	
 	/*Delete spaces from input expression*/
@@ -17,18 +16,20 @@ public class Transformer {
 	/*Replace '+-' on '-' and '--' on '+', 
 	  '-+' on '-' and '++' on '+'*/
 	public static String resolveOperation(String str){
+		int len = str.length();
+		
 		for(int i = 0; i < str.length(); i++){
 			char c = str.charAt(i);
-			if( c == '+' && str.charAt(i+1)=='-'){
+			if( c == '+' && (i+1) < len && str.charAt(i+1)=='-'){
 				str = str.replace("+-", "-");
 			}
-			else if ( c == '-' && str.charAt(i+1)=='+' ){
+			else if ( c == '-' && (i+1) < len && str.charAt(i+1)=='+' ){
 				str = str.replace("-+", "-");
 			}
-			else if( c == '+' &&  str.charAt(i+1)=='+' ){
+			else if( c == '+' &&  (i+1) < len && str.charAt(i+1)=='+' ){
 				str = str.replace("++", "+");
 			}
-			else if( c == '-' && str.charAt(i+1)=='-'){
+			else if( c == '-' && (i+1) < len && str.charAt(i+1)=='-'){
 				str = str.replace("--", "+");
 			}
 		}
@@ -50,7 +51,7 @@ public class Transformer {
 		
 		for(int i = 0; i < sb.length(); i++){
 			c = sb.charAt(i); 
-			if( c == '(' && ( sb.charAt(i+1) == '-' || 
+			if( c == '(' && ((i+1) < sb.length()) && ( sb.charAt(i+1) == '-' || 
 				( '0' <= sb.charAt(i+1) && '9' >= sb.charAt(i+1) ) ) ){
 				lbracketpos = i;
 				int counter = i + 1;
@@ -74,7 +75,7 @@ public class Transformer {
 		
 		for(int i = 0; i < sb.length(); i++){
 			c = sb.charAt(i);
-			if( c == '(' && sb.charAt(i+1) == '-' && sb.charAt(i+2) == '-'  ){
+			if( c == '(' && ( (i+2) < sb.length() ) && sb.charAt(i+1) == '-' && sb.charAt(i+2) == '-'  ){
 				sb.delete(i+1, i+3);
 				lbracketpos = i;
 				int counter = i + 1;
