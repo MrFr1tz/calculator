@@ -18,7 +18,7 @@ public class Transformer {
 	public static String resolveOperation(String str){
 		int len = str.length();
 		
-		for(int i = 0; i < str.length(); i++){
+		for(int i = 0; i < len; i++){
 			char c = str.charAt(i);
 			if( c == '+' && (i+1) < len && str.charAt(i+1)=='-'){
 				str = str.replace("+-", "-");
@@ -32,8 +32,8 @@ public class Transformer {
 			else if( c == '-' && (i+1) < len && str.charAt(i+1)=='-'){
 				str = str.replace("--", "+");
 			}
+			len = str.length();
 		}
-		
 		//Delete '+' from the expression, if it first 
 		if(str.charAt(0) == '+'){
 			StringBuffer sb = new StringBuffer(str);

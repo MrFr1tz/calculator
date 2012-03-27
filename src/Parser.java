@@ -97,11 +97,11 @@ public class Parser {
 	
 	/*Clarification for input expression*/
 	private boolean checkExpression(){
+		char c;
 		char lchar = 0;
 		char rchar = 0;
 		boolean isDot = false;
 		boolean retval = false;
-		char c;
 		
 		for ( int i = 0; i < OPERATOR.length; i++ ){
 			for ( int j = 0; j < exp.length(); j++ ){
@@ -127,8 +127,7 @@ public class Parser {
 						}
 					}
 					else if( j > 0 ){
-						if( j > 0 )
-							lchar = exp.charAt(j-1);
+						lchar = exp.charAt(j-1);
 						if( j + 1 < exp.length() )
 							rchar = exp.charAt(j+1);	
 					}
@@ -137,15 +136,18 @@ public class Parser {
 						return retval;
 					}
 					
-					if( ( ( '0' <= lchar && '9' >= lchar ) || 
-						lchar == ')' || lchar == '*' || lchar == '/' || lchar == '(' ) &&
+					if( ( ( '0' <= lchar && '9' >= lchar ) || lchar == ')' ||
+						lchar == '*' || lchar == '/' || lchar == '(' )  &&
 						( ( '0' <= rchar && '9' >= rchar) || 
-						rchar == '(' || rchar == '-' ) ){
+						rchar == '(' || 
+						( rchar == '-' && ( (j+2) < exp.length() ) && 
+						( exp.charAt(j+2) >= '0' && exp.charAt(j+2) <= '9' ) ) ) ){
 						continue;
 					}
+					
 					else
 					{
-						//System.out.println("Wrong expression.");
+						System.out.println("Wrong expression.");
 						return retval;
 					}
 				}
@@ -252,7 +254,8 @@ public class Parser {
 				'0' <= exp.charAt(currentPos) &&
 				'9' >= exp.charAt(currentPos) &&
 				'(' != exp.charAt(currentPos - 1)) || 
-				'.' == exp.charAt(currentPos) ){
+				'.' == exp.charAt(currentPos) ||
+				'E' == exp.charAt(currentPos) ){
 			currentPos--;
 		}
 
@@ -280,10 +283,11 @@ public class Parser {
 		while( currentPos < exp.length() ){
 			if( ('0' <= exp.charAt(currentPos) && 
 				'9' >= exp.charAt(currentPos)) || 
-				'.' == exp.charAt(currentPos) ){
+				'.' == exp.charAt(currentPos) ||
+				'E' == exp.charAt(currentPos) ){
 				currentPos++;
 			}
-			else if( exp.charAt(currentPos) == '-' && 
+			else if( exp.charAt(currentPos) == '-' &&
 				( '*' == exp.charAt(currentPos - 1) || 
 				'/' == exp.charAt(currentPos - 1) ) ){
 				currentPos++;

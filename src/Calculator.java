@@ -37,8 +37,9 @@ public class Calculator {
 					return String.valueOf(op1/op2);
 				}
 				else{
-					System.out.println("Division by zero");
-					System.exit(0);
+					return "null";
+					//System.out.println("Division by zero");
+					//System.exit(0);
 				}
 			default:
 				break;
