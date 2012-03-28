@@ -32,12 +32,10 @@ public class Main {
 					}
 					int[] bounds = parser.getBoundsForLastExpression();
 					String result = Transformer.replace(exp.getInputExpression(), bounds, Calculator.evaluate(str[0], str[1], str[2]));	
-					
-					if(0 == result.compareTo("null")){
+					if(result.compareTo("null") == 0){
 						System.out.println("Division by zero");
 						break;
 					}
-					
 					if( false == parser.passNewString(result) ){
 						System.out.println("Input string is empty.");
 					}

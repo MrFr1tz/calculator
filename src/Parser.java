@@ -20,6 +20,9 @@ public class Parser {
 	/*Wrapper for following methods checkBrackets() && checkExpression()*/
 	public boolean checkCorrectness(){
 		this.exp = Transformer.resolveOperation(this.exp);
+		if( this.exp.length() == 0 ){
+			return false;
+		}
 		this.expression.setNewExpression(this.exp);
 		return checkBrackets() && checkExpression(); 
 	}
