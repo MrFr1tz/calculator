@@ -50,28 +50,38 @@ public class Transformer {
 	/*Delete unneeded brackets from expression*/
 	private static String removeUnneededBrackets(String str){
 		char c;
-		int lbracketpos;
+		int lbracketpos = 0;
 		StringBuffer sb =  new StringBuffer(str);
 		
-		for(int i = 0; i < sb.length(); i++){
+		for (int i = sb.length() - 1; i >= 0; i--){
+			
 			c = sb.charAt(i); 
-			if( c == '(' && ((i+1) < sb.length()) && ( sb.charAt(i+1) == '-' || 
-				( '0' <= sb.charAt(i+1) && '9' >= sb.charAt(i+1) ) ) ){
+			if( '(' == sb.charAt(i) ){
 				lbracketpos = i;
-				int counter = i + 1;
-				while( c != ')' ){
-					counter++;
-					c = sb.charAt(counter);
-					if( c == '-' || 
-						c == '+' || 
-						c == '*' || 
-						c == '/' ){
-						break;
-					}
+
+				for(int j = lbracketpos; j < sb.length(); j++){
+					if( ((j+1) < sb.length()) && 
+							( sb.charAt(j+1) == '-' ||
+							( '0' <= sb.charAt(i+1) && '9' >= sb.charAt(i+1) ) ) ){
+						int counter = j + 1;
+						while( c != ')' ){
+							counter++;
+							if( counter >= sb.length() ){
+								return null;
+							}
+							c = sb.charAt(counter);
+							if( c == '-' || 
+								c == '+' || 
+								c == '*' || 
+								c == '/' ){
+								break;
+							}
 					
-					if( c == ')'){
-						sb.deleteCharAt(lbracketpos);
-						sb.deleteCharAt(counter - 1);
+							if( c == ')' ){
+								sb.deleteCharAt(lbracketpos);
+								sb.deleteCharAt(counter - 1);
+							}
+						}	
 					}
 				}
 			}
@@ -79,12 +89,18 @@ public class Transformer {
 		
 		for(int i = 0; i < sb.length(); i++){
 			c = sb.charAt(i);
-			if( c == '(' && ( (i+2) < sb.length() ) && sb.charAt(i+1) == '-' && sb.charAt(i+2) == '-'  ){
+			if( c == '(' && 
+				( (i+2) < sb.length() ) && 
+				sb.charAt(i+1) == '-' && 
+				sb.charAt(i+2) == '-' ){
 				sb.delete(i+1, i+3);
 				lbracketpos = i;
 				int counter = i + 1;
 				while( c != ')' ){
 					counter++;
+					if( counter > sb.length() ){
+						return null;
+					}
 					c = sb.charAt(counter);
 					if( c == '-' || 
 						c == '+' || 
@@ -92,7 +108,7 @@ public class Transformer {
 						c == '/' ){
 						break;
 					}
-					
+				
 					if( c == ')'){
 						sb.deleteCharAt(lbracketpos);
 						sb.deleteCharAt(counter - 1);
@@ -100,7 +116,6 @@ public class Transformer {
 				}
 			}
 		}
-		
 		return sb.toString();
 	}
 	
@@ -124,6 +139,9 @@ public class Transformer {
 		}
 	
 		str = Transformer.removeUnneededBrackets(sb.toString());
+		if(str == null){
+			return null;
+		}
 		return Transformer.resolveOperation(str);
 	}
 	

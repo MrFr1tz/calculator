@@ -132,7 +132,11 @@ public class Parser {
 					else if( j > 0 ){
 						lchar = exp.charAt(j-1);
 						if( j + 1 < exp.length() )
-							rchar = exp.charAt(j+1);	
+							rchar = exp.charAt(j+1);
+						else{
+							return retval;
+						}
+						
 					}
 					else{
 						System.out.println("Expression could't start with " + OPERATOR[i] + " operator"); 

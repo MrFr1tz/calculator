@@ -10,6 +10,11 @@ public class Main {
 				input = sc.nextLine();
 				input = Transformer.deleteSpaces(input);
 				input = Transformer.prepareExpression(input);
+				
+				if( input == null ){
+					System.out.println("Expression is wrong");
+					System.exit(1);
+				}
 				//break;
 			
 				Expression exp = new Expression(input);
