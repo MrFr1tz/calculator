@@ -51,6 +51,7 @@ public class Transformer {
 	private static String removeUnneededBrackets(String str){
 		char c;
 		int lbracketpos = 0;
+		int flag = 0;
 		StringBuffer sb =  new StringBuffer(str);
 		
 		for (int i = sb.length() - 1; i >= 0; i--){
@@ -62,26 +63,32 @@ public class Transformer {
 				for(int j = lbracketpos; j < sb.length(); j++){
 					if( ((j+1) < sb.length()) && 
 							( sb.charAt(j+1) == '-' ||
-							( '0' <= sb.charAt(i+1) && '9' >= sb.charAt(i+1) ) ) ){
+							( '0' <= sb.charAt(i+1) && 
+							  '9' >= sb.charAt(i+1) ) ) ){
 						int counter = j + 1;
 						while( c != ')' ){
-							counter++;
 							if( counter >= sb.length() ){
 								return null;
 							}
 							c = sb.charAt(counter);
+							counter++;
 							if( c == '-' || 
 								c == '+' || 
 								c == '*' || 
 								c == '/' ){
+								flag = 1;
 								break;
 							}
 					
 							if( c == ')' ){
 								sb.deleteCharAt(lbracketpos);
-								sb.deleteCharAt(counter - 1);
+								sb.deleteCharAt(counter - 2);
 							}
-						}	
+						}
+						if( flag == 1 ){
+							flag = 0;
+							break;
+						}
 					}
 				}
 			}
@@ -147,18 +154,20 @@ public class Transformer {
 	
 	/*Prepare calculated result before output*/
 	static public String prepareResultForOutput(String str){
-		//Cut '.0' from expression before output
-		if( str.charAt(str.length() - 1) == '0' &&
-				str.charAt(str.length() - 2) == '.' ){
-			StringBuffer sb = new StringBuffer(str);
-			sb.delete(str.length() - 2, str.length());
-			str = sb.toString();
-		}
 		
 		str = str.replace("(", "");
 		str = str.replace(")", "");
 		str = str.replace("", "");
 		str = str.replace("+", "");
+		
+		//Cut '.0' from expression before output
+		if( str.charAt(str.length() - 1) == '0' &&
+			str.charAt(str.length() - 2) == '.' ){
+			StringBuffer sb = new StringBuffer(str);
+			sb.delete(str.length() - 2, str.length());
+			str = sb.toString();
+		}
+		
 		return str.replace(str, "=" + str);
 	}
 }
