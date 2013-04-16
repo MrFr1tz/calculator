@@ -1,9 +1,11 @@
+package ru.kstovo.calculator.engine;
+
 
 public class Expression {
 
 	private String expression;
 	
-	Expression(String exp){
+	public Expression(String exp){
 		this.expression = exp;
 	}
 	

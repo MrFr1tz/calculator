@@ -1,3 +1,5 @@
+package ru.kstovo.calculator.engine;
+
 
 
 public class Parser {
@@ -12,7 +14,7 @@ public class Parser {
 	final private static char[] OPERATOR = {'*','/','+','-'}; 
 	
 	/*Constructor*/
-	Parser(Expression exp){
+	public Parser(Expression exp){
 		this.expression = exp;
 		this.exp = expression.getInputExpression();
 	}
@@ -132,11 +134,7 @@ public class Parser {
 					else if( j > 0 ){
 						lchar = exp.charAt(j-1);
 						if( j + 1 < exp.length() )
-							rchar = exp.charAt(j+1);
-						else{
-							return retval;
-						}
-						
+							rchar = exp.charAt(j+1);	
 					}
 					else{
 						System.out.println("Expression could't start with " + OPERATOR[i] + " operator"); 
